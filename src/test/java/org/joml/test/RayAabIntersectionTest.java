@@ -25,6 +25,8 @@ package org.joml.test;
 
 import org.joml.RayAabIntersection;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -111,5 +113,199 @@ class RayAabIntersectionTest {
         r.set(-1, -0.500001f, 0, 1, 0, 0);
         assertFalse(r.test(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f));
     }
+    
+    @ParameterizedTest
+    @CsvSource({
+        "-1.0, -1.0, -1.0", // MMM
+        "-1.0, -1.0, 0.0", // MMO
+        "-1.0, -1.0, 1.0", // MMP
+        "-1.0, 0.0, -1.0", // MOM
+        "-1.0, 0.0, 0.0", // MOO
+        "-1.0, 0.0, 1.0", // MOP
+        "-1.0, 1.0, -1.0", // MPM
+        "-1.0, 1.0, 0.0", // MPO
+        "-1.0, 1.0, 1.0", // MPP
+        " 0.0, -1.0, -1.0", // OMM
+        " 0.0, -1.0, 0.0", // OMO
+        " 0.0, -1.0, 1.0", // OMP
+        " 0.0, 0.0, -1.0", // OOM
+        " 0.0, 0.0, 1.0", // OOP
+        " 0.0, 1.0, -1.0", // OPM
+        " 0.0, 1.0, 0.0", // OPO
+        " 0.0, 1.0, 1.0", // OPP
+        " 1.0, -1.0, -1.0", // PMM
+        " 1.0, -1.0, 0.0", // PMO
+        " 1.0, -1.0, 1.0", // PMP
+        " 1.0, 0.0, -1.0", // POM
+        " 1.0, 0.0, 0.0", // POO
+        " 1.0, 0.0, 1.0", // POP
+        " 1.0, 1.0, -1.0", // PPM
+        " 1.0, 1.0, 0.0", // PPO
+        " 1.0, 1.0, 1.0" // PPP
+    })
+    void testBoxOverlapTestsTrue(float dirX, float dirY, float dirZ) {
+    	// arrange
+    	RayAabIntersection r = new RayAabIntersection(-dirX, -dirY, -dirZ, dirX, dirY, dirZ);
+    	
+    	// act
+    	boolean result = r.test(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
+    	
+    	// assert
+    	assertTrue(result);
+    }
 
+    @ParameterizedTest
+    @CsvSource({
+        "-1.0, -1.0, -1.0", // MMM
+        "-1.0, -1.0, 0.0", // MMO
+        "-1.0, -1.0, 1.0", // MMP
+        "-1.0, 0.0, -1.0", // MOM
+        "-1.0, 0.0, 0.0", // MOO
+        "-1.0, 0.0, 1.0", // MOP
+        "-1.0, 1.0, -1.0", // MPM
+        "-1.0, 1.0, 0.0", // MPO
+        "-1.0, 1.0, 1.0", // MPP
+        " 0.0, -1.0, -1.0", // OMM
+        " 0.0, -1.0, 0.0", // OMO
+        " 0.0, -1.0, 1.0", // OMP
+        " 0.0, 0.0, -1.0", // OOM
+        " 0.0, 0.0, 1.0", // OOP
+        " 0.0, 1.0, -1.0", // OPM
+        " 0.0, 1.0, 0.0", // OPO
+        " 0.0, 1.0, 1.0", // OPP
+        " 1.0, -1.0, -1.0", // PMM
+        " 1.0, -1.0, 0.0", // PMO
+        " 1.0, -1.0, 1.0", // PMP
+        " 1.0, 0.0, -1.0", // POM
+        " 1.0, 0.0, 0.0", // POO
+        " 1.0, 0.0, 1.0", // POP
+        " 1.0, 1.0, -1.0", // PPM
+        " 1.0, 1.0, 0.0", // PPO
+        " 1.0, 1.0, 1.0" // PPP
+    })
+    void testBoxOverlapTestsFailWhenStartingPastTarget(float dirX, float dirY, float dirZ) {
+    	// arrange
+    	RayAabIntersection r = new RayAabIntersection(dirX * 1.5f, dirY * 1.5f, dirZ * 1.5f, dirX, dirY, dirZ);
+    	
+    	// act
+    	boolean result = r.test(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
+    	
+    	// assert
+    	assertFalse(result);
+    }
+    
+    @ParameterizedTest
+    @CsvSource({
+        "-1.0, -1.0, -1.0", // MMM
+        "-1.0, -1.0, 0.0", // MMO
+        "-1.0, -1.0, 1.0", // MMP
+        "-1.0, 0.0, -1.0", // MOM
+        "-1.0, 0.0, 1.0", // MOP
+        "-1.0, 1.0, -1.0", // MPM
+        "-1.0, 1.0, 0.0", // MPO
+        "-1.0, 1.0, 1.0", // MPP
+        " 0.0, -1.0, -1.0", // OMM
+        " 0.0, -1.0, 0.0", // OMO
+        " 0.0, -1.0, 1.0", // OMP
+        " 0.0, 0.0, -1.0", // OOM
+        " 0.0, 0.0, 1.0", // OOP
+        " 0.0, 1.0, -1.0", // OPM
+        " 0.0, 1.0, 0.0", // OPO
+        " 0.0, 1.0, 1.0", // OPP
+        " 1.0, -1.0, -1.0", // PMM
+        " 1.0, -1.0, 0.0", // PMO
+        " 1.0, -1.0, 1.0", // PMP
+        " 1.0, 0.0, -1.0", // POM
+        " 1.0, 0.0, 1.0", // POP
+        " 1.0, 1.0, -1.0", // PPM
+        " 1.0, 1.0, 0.0", // PPO
+        " 1.0, 1.0, 1.0" // PPP
+    })
+    void testBoxOverlapTestsFailWhenXPastTarget(float dirX, float dirY, float dirZ) {
+    	// arrange
+    	RayAabIntersection r = new RayAabIntersection(-dirX + 1.1f, -dirY, -dirZ, dirX, dirY, dirZ);
+    	
+    	// act
+    	boolean result = r.test(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
+    	
+    	// assert
+    	assertFalse(result);
+    }
+    
+    @ParameterizedTest
+    @CsvSource({
+        "-1.0, -1.0, -1.0", // MMM
+        "-1.0, -1.0, 0.0", // MMO
+        "-1.0, -1.0, 1.0", // MMP
+        "-1.0, 0.0, -1.0", // MOM
+        "-1.0, 0.0, 0.0", // MOO
+        "-1.0, 0.0, 1.0", // MOP
+        "-1.0, 1.0, -1.0", // MPM
+        "-1.0, 1.0, 0.0", // MPO
+        "-1.0, 1.0, 1.0", // MPP
+        " 0.0, -1.0, -1.0", // OMM
+        " 0.0, -1.0, 1.0", // OMP
+        " 0.0, 0.0, -1.0", // OOM
+        " 0.0, 0.0, 1.0", // OOP
+        " 0.0, 1.0, -1.0", // OPM
+        " 0.0, 1.0, 1.0", // OPP
+        " 1.0, -1.0, -1.0", // PMM
+        " 1.0, -1.0, 0.0", // PMO
+        " 1.0, -1.0, 1.0", // PMP
+        " 1.0, 0.0, -1.0", // POM
+        " 1.0, 0.0, 0.0", // POO
+        " 1.0, 0.0, 1.0", // POP
+        " 1.0, 1.0, -1.0", // PPM
+        " 1.0, 1.0, 0.0", // PPO
+        " 1.0, 1.0, 1.0" // PPP
+    })
+    void testBoxOverlapTestsFailWhenYPastTarget(float dirX, float dirY, float dirZ) {
+    	// arrange
+    	RayAabIntersection r = new RayAabIntersection(-dirX, -dirY + 1.1f, -dirZ, dirX, dirY, dirZ);
+    	
+    	// act
+    	boolean result = r.test(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
+    	
+    	// assert
+    	assertFalse(result);
+    }
+    
+    @ParameterizedTest
+    @CsvSource({
+        "-1.0, -1.0, -1.0", // MMM
+        "-1.0, -1.0, 0.0", // MMO
+        "-1.0, -1.0, 1.0", // MMP
+        "-1.0, 0.0, -1.0", // MOM
+        "-1.0, 0.0, 0.0", // MOO
+        "-1.0, 0.0, 1.0", // MOP
+        "-1.0, 1.0, -1.0", // MPM
+        "-1.0, 1.0, 0.0", // MPO
+        "-1.0, 1.0, 1.0", // MPP
+        " 0.0, -1.0, -1.0", // OMM
+        " 0.0, -1.0, 0.0", // OMO
+        " 0.0, -1.0, 1.0", // OMP
+        " 0.0, 1.0, -1.0", // OPM
+        " 0.0, 1.0, 0.0", // OPO
+        " 0.0, 1.0, 1.0", // OPP
+        " 1.0, -1.0, -1.0", // PMM
+        " 1.0, -1.0, 0.0", // PMO
+        " 1.0, -1.0, 1.0", // PMP
+        " 1.0, 0.0, -1.0", // POM
+        " 1.0, 0.0, 0.0", // POO
+        " 1.0, 0.0, 1.0", // POP
+        " 1.0, 1.0, -1.0", // PPM
+        " 1.0, 1.0, 0.0", // PPO
+        " 1.0, 1.0, 1.0" // PPP
+    })
+    void testBoxOverlapTestsFailWhenZPastTarget(float dirX, float dirY, float dirZ) {
+    	// arrange
+    	RayAabIntersection r = new RayAabIntersection(-dirX, -dirY, -dirZ + 1.1f, dirX, dirY, dirZ);
+    	
+    	// act
+    	boolean result = r.test(-0.5f, -0.5f, -0.5f, 0.5f, 0.5f, 0.5f);
+    	
+    	// assert
+    	assertFalse(result);
+    }
+    
 }
