@@ -28,6 +28,8 @@ import org.joml.QuaternionfInterpolator;
 import org.joml.Vector3f;
 import org.joml.Math;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import static org.joml.test.TestUtil.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,6 +40,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Kai Burjack
  */
 class QuaternionfInterpolatorTest {
+	
+	private static final double DELTA = 1E-3;
+	
     @Test
     void testOneThird() {
         Quaternionf q0 = new Quaternionf().rotateX(Math.toRadians(90));
@@ -51,4 +56,76 @@ class QuaternionfInterpolatorTest {
         assertEquals(1.0f, v.length(), 1E-6f);
         assertVector3fEquals(new Vector3f(2.0f/3.0f, -1.0f/3.0f, 2.0f/3.0f), v, 1E-6f);
     }
+    
+	@Test
+	void testComputeWeightedAverageHandleIndenticalQuaternions() {
+		// arrange
+		Quaternionf q = new Quaternionf(1.0f, 1.0f, 1.0f, 1.0f).normalize();
+		Quaternionf result = new Quaternionf();
+		
+		// act
+		new QuaternionfInterpolator().computeWeightedAverage(new Quaternionf[] { q, q }, new float[] { 0.5f, 0.5f }, 15, result);
+		
+		// assert
+		// normalized
+		assertEquals(1.0f, result.lengthSquared(), DELTA);
+		// average
+		assertEquals(q.x, result.x, DELTA);
+		assertEquals(q.y, result.y, DELTA);
+		assertEquals(q.z, result.z, DELTA);
+		assertEquals(q.w, result.w, DELTA);
+	}
+	
+	@Test
+	void testComputeWeightedAverage() {
+		// arrange
+		Quaternionf q1 = new Quaternionf(1.0f, 1.0f, 1.0f, 1.0f).normalize();
+		Quaternionf q2 = new Quaternionf(123.0d, 123.0d, 123.0d, 123.0d).normalize();
+		Quaternionf result = new Quaternionf();
+		
+		// act
+		new QuaternionfInterpolator().computeWeightedAverage(new Quaternionf[] { q1, q2 }, new float[] { 0.0f, 1.0f }, 15, result);
+		
+		// assert
+		// normalized
+		assertEquals(1.0f, result.lengthSquared(), DELTA);
+		// average
+		assertEquals(q2.x, result.x, DELTA);
+		assertEquals(q2.y, result.y, DELTA);
+		assertEquals(q2.z, result.z, DELTA);
+		assertEquals(q2.w, result.w, DELTA);
+	}
+	
+	@Test
+	void testComputeWeightedAverageInvalidWeightsLength() {
+		// arrange
+		Quaternionf q1 = new Quaternionf();
+		Quaternionf q2 = new Quaternionf();
+		float[] weights = new float[] { 1.0f };
+		Quaternionf result = new Quaternionf();
+		
+		// act & assert
+		assertThrows(IllegalArgumentException.class, () -> new QuaternionfInterpolator().computeWeightedAverage(new Quaternionf[] { q1, q2 }, weights, 15, result));
+	}
+	
+	@ParameterizedTest
+	@NullAndEmptySource
+	void testComputeWeightedAverageInvalidQuaternions(Quaternionf[] quaternions) {
+		assertThrows(IllegalArgumentException.class, () -> new QuaternionfInterpolator().computeWeightedAverage(quaternions, new float[] { 1.0f }, 15, new Quaternionf()));
+	}
+	
+	@ParameterizedTest
+	@NullAndEmptySource
+	void testComputeWeightedAverageInvalidWeights(float[] weights) {
+		assertThrows(IllegalArgumentException.class, () -> new QuaternionfInterpolator().computeWeightedAverage(new Quaternionf[] { new Quaternionf(), new Quaternionf() }, weights, 15, new Quaternionf()));
+	}
+	
+	@Test
+	void testComputeWeightedAverageNegativeIterationCount() {
+		// arrange
+		int iterations = -15;
+		
+		// act & assert
+		assertThrows(IllegalArgumentException.class, () -> new QuaternionfInterpolator().computeWeightedAverage(new Quaternionf[] { new Quaternionf(), new Quaternionf() }, new float[] { 0.8f, 0.2f }, iterations, new Quaternionf()));
+	}
 }
