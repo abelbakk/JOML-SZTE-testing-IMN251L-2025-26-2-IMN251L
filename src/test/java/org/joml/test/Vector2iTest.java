@@ -27,6 +27,7 @@ import org.joml.RoundingMode;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.joml.Vector3d;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,6 +36,83 @@ import static org.junit.jupiter.api.Assertions.*;
  * Test class for {@link Vector2i}.
  */
 class Vector2iTest {
+    @Test
+    void testVector2iEqualsWithVector2i() {
+        final Vector2i v1 = new Vector2i(5, 15);
+        assertTrue(v1.equals(new Vector2i(5, 15)));
+        assertFalse(v1.equals(new Vector3d(5, 15, 0)));
+        assertFalse(v1.equals(new Vector2i(5, -15)));
+        assertFalse(v1.equals(new Vector2i(-5, 15)));
+        assertFalse(v1.equals(null));
+        assertTrue(v1.equals(v1));
+    }
+
+    @Test
+    void testVector2iEqualsWithCoordinates() {
+        final Vector2i v1 = new Vector2i(5, 15);
+        assertTrue(v1.equals(5, 15));
+        assertFalse(v1.equals(5, -15));
+        assertFalse(v1.equals(-5, -15));
+    }
+
+    @Test
+    void testVector2iAbsoluteMinComponent() {
+        assertEquals(0, new Vector2i(5, -15).minComponent());
+        assertEquals(1, new Vector2i(-35, 2).minComponent());
+    }
+
+    @Test
+    void testVector2iAbsoluteMaxComponent() {
+        assertEquals(1, new Vector2i(5, -15).maxComponent());
+        assertEquals(0, new Vector2i(-35, 2).maxComponent());
+    }
+
+    @Test
+    void testVector2iMax() {
+        final Vector2i v1 = new Vector2i(5, 15);
+        assertEquals(new Vector2i(5, 15), v1.max(new Vector2i(-15, -8)));
+
+        final Vector2i v2 = new Vector2i(6, 16);
+        assertEquals(new Vector2i(35, 42), v2.max(new Vector2i(35, 42)));
+    }
+
+    @Test
+    void testVector2iMin() {
+        final Vector2i v1 = new Vector2i(5, 15);
+        assertEquals(new Vector2i(-15, -8), v1.min(new Vector2i(-15, -8)));
+
+        final Vector2i v2 = new Vector2i(6, 16);
+        assertEquals(new Vector2i(6, 16), v2.min(new Vector2i(35, 42)));
+    }
+
+    @Test
+    void testVector2iSetComponentByParameter() {
+        final Vector2i v1 = new Vector2i(5, 15);
+        assertEquals(new Vector2i(-22, 15), v1.setComponent(0, -22));
+        assertEquals(new Vector2i(-22, 35), v1.setComponent(1, 35));
+        assertThrows(IllegalArgumentException.class,() -> v1.setComponent(2, 10));
+    }
+
+    @Test
+    void testVector2iGetComponentByParameter() {
+        final Vector2i v1 = new Vector2i(5, 15);
+        assertEquals(5, v1.get(0));
+        assertEquals(15, v1.get(1));
+        assertThrows(IllegalArgumentException.class, () -> v1.get(2));
+    }
+
+    @Test
+    void testVector2iConstruction() {
+        final Vector2i v1 = new Vector2i();
+        assertEquals(new Vector2i(0, 0), v1);
+
+        final Vector2i v2 = new Vector2i(20);
+        assertEquals(new Vector2i(20, 20), v2);
+
+        final Vector2i v3 = new Vector2i(v2);
+        assertEquals(new Vector2i(20, 20), v3);
+    }
+
     @Test
     void testVector3iRounding() {
         Vector2i v1 = new Vector2i(0.0f,.6f, RoundingMode.FLOOR);
@@ -60,5 +138,11 @@ class Vector2iTest {
 
         assertEquals(v7, new Vector2i(0,1));
         assertEquals(v8, new Vector2i(10,2));
+
+        assertEquals(new Vector2i(0,0), new Vector2i(0.0f,.6f, RoundingMode.FLOOR));
+        assertEquals(new Vector2i(0,1), new Vector2i(0.0f,.6f, RoundingMode.CEILING));
+
+        assertEquals(new Vector2i(0,0), new Vector2i(0.0,.6, RoundingMode.FLOOR));
+        assertEquals(new Vector2i(0,1), new Vector2i(0.0,.6, RoundingMode.CEILING));
     }
 }
