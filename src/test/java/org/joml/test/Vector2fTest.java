@@ -36,6 +36,94 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class Vector2fTest {
     @Test
+    void testVector2fEqualsWithVector2fAndDelta() {
+        final float delta = MANY_OPS_AROUND_ZERO_PRECISION_FLOAT;
+        final Vector2f v1 = new Vector2f(5, 15);
+        assertTrue(v1.equals(new Vector2f(5, 15), delta));
+        assertFalse(v1.equals(new Vector2f(5, -15), delta));
+        assertFalse(v1.equals(new Vector2f(-5, 15), delta));
+        assertFalse(v1.equals(null, delta));
+        assertTrue(v1.equals(v1, delta));
+    }
+
+    @Test
+    void testVector2fEqualsWithVector2f() {
+        final Vector2f v1 = new Vector2f(5, 15);
+        assertTrue(v1.equals(new Vector2f(5, 15)));
+        assertFalse(v1.equals(new Vector3d(5, 15, 0)));
+        assertFalse(v1.equals(new Vector2f(5, -15)));
+        assertFalse(v1.equals(new Vector2f(-5, 15)));
+        assertFalse(v1.equals(null));
+        assertTrue(v1.equals(v1));
+    }
+
+    @Test
+    void testVector2fEqualsWithCoordinates() {
+        final Vector2f v1 = new Vector2f(5, 15);
+        assertTrue(v1.equals(5, 15));
+        assertFalse(v1.equals(5, -15));
+        assertFalse(v1.equals(-5, -15));
+    }
+
+    @Test
+    void testVector2fAbsoluteMinComponent() {
+        assertEquals(0, new Vector2f(5, -15).minComponent());
+        assertEquals(1, new Vector2f(-35, 2).minComponent());
+    }
+
+    @Test
+    void testVector2fAbsoluteMaxComponent() {
+        assertEquals(1, new Vector2f(5, -15).maxComponent());
+        assertEquals(0, new Vector2f(-35, 2).maxComponent());
+    }
+
+    @Test
+    void testVector2fMax() {
+        final Vector2f v1 = new Vector2f(5, 15);
+        assertEquals(new Vector2f(5, 15), v1.max(new Vector2f(-15, -8)));
+
+        final Vector2f v2 = new Vector2f(6, 16);
+        assertEquals(new Vector2f(35, 42), v2.max(new Vector2f(35, 42)));
+    }
+
+    @Test
+    void testVector2fMin() {
+        final Vector2f v1 = new Vector2f(5, 15);
+        assertEquals(new Vector2f(-15, -8), v1.min(new Vector2f(-15, -8)));
+
+        final Vector2f v2 = new Vector2f(6, 16);
+        assertEquals(new Vector2f(6, 16), v2.min(new Vector2f(35, 42)));
+    }
+
+    @Test
+    void testVector2fSetComponentByParameter() {
+        final Vector2f v1 = new Vector2f(5, 15);
+        assertEquals(new Vector2f(-22, 15), v1.setComponent(0, -22));
+        assertEquals(new Vector2f(-22, 35), v1.setComponent(1, 35));
+        assertThrows(IllegalArgumentException.class,() -> v1.setComponent(2, 10));
+    }
+
+    @Test
+    void testVector2fGetComponentByParameter() {
+        final Vector2f v1 = new Vector2f(5, 15);
+        assertEquals(5, v1.get(0));
+        assertEquals(15, v1.get(1));
+        assertThrows(IllegalArgumentException.class, () -> v1.get(2));
+    }
+
+    @Test
+    void testVector2fConstruction() {
+        final Vector2f v1 = new Vector2f();
+        assertEquals(new Vector2f(0, 0), v1);
+
+        final Vector2f v2 = new Vector2f(20);
+        assertEquals(new Vector2f(20, 20), v2);
+
+        final Vector2f v3 = new Vector2f(v2);
+        assertEquals(new Vector2f(20, 20), v3);
+    }
+
+    @Test
     void testAngleVector2fVector2f() {
         Vector2f testVec1 = new Vector2f(-9.37f, 5.892f);
         Vector2f testVec2 = new Vector2f();
