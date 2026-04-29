@@ -35,51 +35,41 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Sebastian Fellner
  */
 class Vector4fTest {
-
-    private static final float[] NORMAL_MATRIX4x4_CONTENT = new float[] {
+    private static final Matrix4f NORMAL_MATRIX_4F = new Matrix4f(new float[] {
             1, 2, 3, 4,
             5, 6, 7, 8,
             9, 10, 11, 12,
-            13, 14, 15, 16};
-
-    private static final float[] PROPERTY_TRANSLATION_MATRIX4x4_CONTENT = new float[]{
+            13, 14, 15, 16});
+    private static final Matrix4f PROPERTY_TRANSLATION_MATRIX_4F = new Matrix4f(new float[]{
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
-            5, -2, 4, 1};
-
-    private static final float[] PROPERTY_TRANSLATION_MATRIX4x3_CONTENT = new float[]{
-            1, 0, 0,
-            0, 1, 0,
-            0, 0, 1,
-            5, -2, 4};
-
-    private static final float[] PROPERTY_AFFINE_MATRIX4x4_CONTENT = new float[]{
+            5, -2, 4, 1});
+    private static final Matrix4f PROPERTY_AFFINE_MATRIX_4F = new Matrix4f(new float[]{
             2, 0, 2, 0,
             0,-2, 0, 0,
             0, 8, 4, 0,
-            0, 0, 0, 1};
-
-    private static final float[] PROPERTY_IDENTITY_MATRIX4x4_CONTENT = new float[]{
+            0, 0, 0, 1});
+    private static final Matrix4f PROPERTY_IDENTITY_MATRIX_4F = new Matrix4f(new float[]{
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
-            0, 0, 0, 1};
-
-    private static final float[] PROPERTY_IDENTITY_MATRIX4x3_CONTENT = new float[]{
+            0, 0, 0, 1});
+    private static final Matrix4x3f NORMAL_MATRIX_4x3F = new Matrix4x3f(new float[] {
+            1, 2, 3,
+            4, 5, 6,
+            7, 8, 9,
+            10, 11, 12});
+    private static final Matrix4x3f PROPERTY_TRANSLATION_MATRIX_4x3F = new Matrix4x3f(new float[]{
             1, 0, 0,
             0, 1, 0,
             0, 0, 1,
-            0, 0, 0};
-
-    private static final Matrix4f NORMAL_MATRIX_4F = new Matrix4f(NORMAL_MATRIX4x4_CONTENT);
-    private static final Matrix4f PROPERTY_TRANSLATION_MATRIX_4F = new Matrix4f(PROPERTY_TRANSLATION_MATRIX4x4_CONTENT);
-    private static final Matrix4f PROPERTY_AFFINE_MATRIX_4F = new Matrix4f(PROPERTY_AFFINE_MATRIX4x4_CONTENT);
-    private static final Matrix4f PROPERTY_IDENTITY_MATRIX_4F = new Matrix4f(PROPERTY_IDENTITY_MATRIX4x4_CONTENT);
-
-    private static final Matrix4x3f NORMAL_MATRIX_4x3F = new Matrix4x3f(NORMAL_MATRIX4x4_CONTENT);
-    private static final Matrix4x3f PROPERTY_TRANSLATION_MATRIX_4x3F = new Matrix4x3f(PROPERTY_TRANSLATION_MATRIX4x3_CONTENT);
-    private static final Matrix4x3f PROPERTY_IDENTITY_MATRIX_4x3F = new Matrix4x3f(PROPERTY_IDENTITY_MATRIX4x3_CONTENT);
+            5, -2, 4});
+    private static final Matrix4x3f PROPERTY_IDENTITY_MATRIX_4x3F = new Matrix4x3f(new float[]{
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1,
+            0, 0, 0});
 
     @Test
     void testVector4fRotateAxis() {
@@ -361,7 +351,7 @@ class Vector4fTest {
 
         assertThrows(IllegalArgumentException.class, () -> vector1.setComponent(4, 99));
     }
-    
+
     @Test
     void testAngleVector4fVector4f() {
         Vector4f testVec1 = new Vector4f(2f, -9.37f, 5.892f, -12.5f);
