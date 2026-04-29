@@ -40,6 +40,49 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Sebastian Fellner
  */
 class Vector3dTest {
+    private static final Matrix4f NORMAL_MATRIX_4F = new Matrix4f(new float[] {
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            9, 10, 11, 12,
+            13, 14, 15, 16});
+    private static final Matrix4d NORMAL_MATRIX_4D = new Matrix4d(NORMAL_MATRIX_4F);
+    private static final Matrix4f PROPERTY_TRANSLATION_MATRIX_4F = new Matrix4f(new float[]{
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            5, -2, 4, 1});
+    private static final Matrix4d PROPERTY_TRANSLATION_MATRIX_4D = new Matrix4d(PROPERTY_TRANSLATION_MATRIX_4F);
+    private static final Matrix4f PROPERTY_AFFINE_MATRIX_4F = new Matrix4f(new float[]{
+            2, 0, 2, 0,
+            0,-2, 0, 0,
+            0, 8, 4, 0,
+            0, 0, 0, 1});
+    private static final Matrix4d PROPERTY_AFFINE_MATRIX_4D = new Matrix4d(PROPERTY_AFFINE_MATRIX_4F);
+    private static final Matrix4f PROPERTY_IDENTITY_MATRIX_4F = new Matrix4f(new float[]{
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1});
+    private static final Matrix4d PROPERTY_IDENTITY_MATRIX_4D = new Matrix4d(PROPERTY_IDENTITY_MATRIX_4F);
+    private static final Matrix4x3f NORMAL_MATRIX_4x3F = new Matrix4x3f(new float[] {
+            1, 2, 3,
+            4, 5, 6,
+            7, 8, 9,
+            10, 11, 12});
+    private static final Matrix4x3d NORMAL_MATRIX_4x3D = new Matrix4x3d(NORMAL_MATRIX_4x3F);
+    private static final Matrix4x3f PROPERTY_TRANSLATION_MATRIX_4x3F = new Matrix4x3f(new float[]{
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1,
+            5, -2, 4});
+    private static final Matrix4x3d PROPERTY_TRANSLATION_MATRIX_4x3D = new Matrix4x3d(PROPERTY_TRANSLATION_MATRIX_4x3F);
+    private static final Matrix4x3f PROPERTY_IDENTITY_MATRIX_4x3F = new Matrix4x3f(new float[]{
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1,
+            0, 0, 0});
+    private static final Matrix4x3d PROPERTY_IDENTITY_MATRIX_4x3D = new Matrix4x3d(PROPERTY_IDENTITY_MATRIX_4x3F);
+
     @Test
     void testVector3DOrthogonalize() {
         final Vector3d vector1 = new Vector3d(2, 3, 6);
@@ -167,405 +210,252 @@ class Vector3dTest {
 
     @Test
     void testVector3DMulPositionWithMatrix4x3fAndDestinationVector3d() {
-        final Matrix4x3f mat1 = new Matrix4x3f(new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
         final Vector3d destVector = new Vector3d();
-        vector1.mulPosition(mat1, destVector);
+        vector1.mulPosition(NORMAL_MATRIX_4x3F, destVector);
         assertEquals(new Vector3d(128.0, 160.0, 192.0), destVector);
         assertEquals(new Vector3d(3, 27, 1), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4x3f mat2 = new Matrix4x3f(new float[]{
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1,
-                5, -2, 4});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulPosition(mat2, destVector);
+        vector2.mulPosition(PROPERTY_TRANSLATION_MATRIX_4x3F, destVector);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), destVector);
         assertEquals(new Vector3d(7, 8, 9), vector2);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4x3f mat3 = new Matrix4x3f(new float[]{
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1,
-                0, 0, 0});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulPosition(mat3, destVector);
+        vector3.mulPosition(PROPERTY_IDENTITY_MATRIX_4x3F, destVector);
         assertEquals(new Vector3d(6, 8, 10), destVector);
         assertEquals(new Vector3d(6, 8, 10), vector3);
     }
 
     @Test
     void testVector3DMulPositionWithMatrix4x3f() {
-        final Matrix4x3f mat1 = new Matrix4x3f(new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
-        vector1.mulPosition(mat1);
+        vector1.mulPosition(NORMAL_MATRIX_4x3F);
         assertEquals(new Vector3d(128.0, 160.0, 192.0), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4x3f mat2 = new Matrix4x3f(new float[]{
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1,
-                5, -2, 4});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulPosition(mat2);
+        vector2.mulPosition(PROPERTY_TRANSLATION_MATRIX_4x3F);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), vector2);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4x3f mat3 = new Matrix4x3f(new float[]{
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1,
-                0, 0, 0});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulPosition(mat3);
+        vector3.mulPosition(PROPERTY_IDENTITY_MATRIX_4x3F);
         assertEquals(new Vector3d(6, 8, 10), vector3);
     }
 
     @Test
     void testVector3DMulPositionWithMatrix4x3dAndDestinationVector3D() {
-        final Matrix4x3d mat1 = new Matrix4x3d(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
         final Vector3d destVector = new Vector3d();
-        vector1.mulPosition(mat1, destVector);
+        vector1.mulPosition(NORMAL_MATRIX_4x3D, destVector);
         assertEquals(new Vector3d(128.0, 160.0, 192.0), destVector);
         assertEquals(new Vector3d(3, 27, 1), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4x3d mat2 = new Matrix4x3d(new double[]{
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1,
-                5, -2, 4});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulPosition(mat2, destVector);
+        vector2.mulPosition(PROPERTY_TRANSLATION_MATRIX_4x3D, destVector);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), destVector);
         assertEquals(new Vector3d(7, 8, 9), vector2);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4x3d mat3 = new Matrix4x3d(new double[]{
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1,
-                0, 0, 0});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulPosition(mat3, destVector);
+        vector3.mulPosition(PROPERTY_IDENTITY_MATRIX_4x3D, destVector);
         assertEquals(new Vector3d(6, 8, 10), destVector);
         assertEquals(new Vector3d(6, 8, 10), vector3);
     }
 
     @Test
     void testVector3DMulPositionWithMatrix4x3d() {
-        final Matrix4x3d mat1 = new Matrix4x3d(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
-        vector1.mulPosition(mat1);
+        vector1.mulPosition(NORMAL_MATRIX_4x3D);
         assertEquals(new Vector3d(128.0, 160.0, 192.0), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4x3d mat2 = new Matrix4x3d(new double[]{
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1,
-                5, -2, 4});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulPosition(mat2);
+        vector2.mulPosition(PROPERTY_TRANSLATION_MATRIX_4x3D);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), vector2);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4x3d mat3 = new Matrix4x3d(new double[]{
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1,
-                0, 0, 0});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulPosition(mat3);
+        vector3.mulPosition(PROPERTY_IDENTITY_MATRIX_4x3D);
         assertEquals(new Vector3d(6, 8, 10), vector3);
     }
 
     @Test
     void testVector3DMulPositionWithMatrix4fAndDestinationVector3D() {
-        final Matrix4f mat1 = new Matrix4f(new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
         final Vector3d destVector = new Vector3d();
-        vector1.mulPosition(mat1, destVector);
+        vector1.mulPosition(NORMAL_MATRIX_4F, destVector);
         assertEquals(new Vector3d(160.0, 192.0, 224.0), destVector);
         assertEquals(new Vector3d(3, 27, 1), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4f mat2 = new Matrix4f(new float[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                5, -2, 4, 1});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulPosition(mat2, destVector);
+        vector2.mulPosition(PROPERTY_TRANSLATION_MATRIX_4F, destVector);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), destVector);
         assertEquals(new Vector3d(7, 8, 9), vector2);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4f mat3 = new Matrix4f(new float[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulPosition(mat3, destVector);
+        vector3.mulPosition(PROPERTY_IDENTITY_MATRIX_4F, destVector);
         assertEquals(new Vector3d(6, 8, 10), destVector);
         assertEquals(new Vector3d(6, 8, 10), vector3);
     }
 
     @Test
     void testVector3DMulPositionWithMatrix4f() {
-        final Matrix4f mat1 = new Matrix4f(new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
-        vector1.mulPosition(mat1);
+        vector1.mulPosition(NORMAL_MATRIX_4F);
         assertEquals(new Vector3d(160.0, 192.0, 224.0), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4f mat2 = new Matrix4f(new float[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                5, -2, 4, 1});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulPosition(mat2);
+        vector2.mulPosition(PROPERTY_TRANSLATION_MATRIX_4F);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), vector2);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4f mat3 = new Matrix4f(new float[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulPosition(mat3);
+        vector3.mulPosition(PROPERTY_IDENTITY_MATRIX_4F);
         assertEquals(new Vector3d(6, 8, 10), vector3);
     }
 
     @Test
     void testVector3DMulPositionWithMatrix4dAndDestinationVector3D() {
-        final Matrix4d mat1 = new Matrix4d(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
         final Vector3d destVector = new Vector3d();
-        vector1.mulPosition(mat1, destVector);
+        vector1.mulPosition(NORMAL_MATRIX_4D, destVector);
         assertEquals(new Vector3d(160.0, 192.0, 224.0), destVector);
         assertEquals(new Vector3d(3, 27, 1), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4d mat2 = new Matrix4d(new double[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                5, -2, 4, 1});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulPosition(mat2, destVector);
+        vector2.mulPosition(PROPERTY_TRANSLATION_MATRIX_4D, destVector);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), destVector);
         assertEquals(new Vector3d(7, 8, 9), vector2);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4d mat3 = new Matrix4d(new double[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulPosition(mat3, destVector);
+        vector3.mulPosition(PROPERTY_IDENTITY_MATRIX_4D, destVector);
         assertEquals(new Vector3d(6, 8, 10), destVector);
         assertEquals(new Vector3d(6, 8, 10), vector3);
     }
 
     @Test
     void testVector3DMulPositionWithMatrix4d() {
-        final Matrix4d mat1 = new Matrix4d(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
-        vector1.mulPosition(mat1);
+        vector1.mulPosition(NORMAL_MATRIX_4D);
         assertEquals(new Vector3d(160.0, 192.0, 224.0), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4d mat2 = new Matrix4d(new double[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                5, -2, 4, 1});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulPosition(mat2);
+        vector2.mulPosition(PROPERTY_TRANSLATION_MATRIX_4D);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), vector2);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4d mat3 = new Matrix4d(new double[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulPosition(mat3);
+        vector3.mulPosition(PROPERTY_IDENTITY_MATRIX_4D);
         assertEquals(new Vector3d(6, 8, 10), vector3);
     }
 
     @Test
     void testVector3DMulProjectWithMatrix4fAndDestinationVector3d() {
-        final Matrix4f mat1 = new Matrix4f(new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
         final Vector3d destVector = new Vector3d();
-        vector1.mulProject(mat1, destVector);
+        vector1.mulProject(NORMAL_MATRIX_4F, destVector);
         assertEquals(new Vector3d(0.625, 0.75, 0.875), destVector);
         assertEquals(new Vector3d(3, 27, 1), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4f mat2 = new Matrix4f(new float[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                5, -2, 4, 1});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulProject(mat2, destVector);
+        vector2.mulProject(PROPERTY_TRANSLATION_MATRIX_4F, destVector);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), destVector);
         assertEquals(new Vector3d(7, 8, 9), vector2);
 
 
         // A matrix with PROPERTY_AFFINE property.
-        final Matrix4f mat3 = new Matrix4f(new float[]{
-                2, 0, 2, 0,
-                0,-2, 0, 0,
-                0, 8, 4, 0,
-                0, 0, 0, 1});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulProject(mat3, destVector);
+        vector3.mulProject(PROPERTY_AFFINE_MATRIX_4F, destVector);
         assertEquals(new Vector3d(12.0, 64.0, 52.0), destVector);
         assertEquals(new Vector3d(6, 8, 10), vector3);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4f mat4 = new Matrix4f(new float[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1});
         final Vector3d vector4 = new Vector3d(6, 8, 10);
-        vector4.mulProject(mat4, destVector);
+        vector4.mulProject(PROPERTY_IDENTITY_MATRIX_4F, destVector);
         assertEquals(new Vector3d(6.0, 8.0, 10.0), destVector);
         assertEquals(new Vector3d(6, 8, 10), vector4);
     }
 
     @Test
     void testVector3DMulProjectWithMatrix4f() {
-        final Matrix4f mat1 = new Matrix4f(new float[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
-        vector1.mulProject(mat1);
+        vector1.mulProject(NORMAL_MATRIX_4F);
         assertEquals(new Vector3d(0.625, 0.75, 0.875), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4f mat2 = new Matrix4f(new float[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                5, -2, 4, 1});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulProject(mat2);
+        vector2.mulProject(PROPERTY_TRANSLATION_MATRIX_4F);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), vector2);
 
         // A matrix with PROPERTY_AFFINE property.
-        final Matrix4f mat3 = new Matrix4f(new float[]{
-                2, 0, 2, 0,
-                0,-2, 0, 0,
-                0, 8, 4, 0,
-                0, 0, 0, 1});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulProject(mat3);
+        vector3.mulProject(PROPERTY_AFFINE_MATRIX_4F);
         assertEquals(new Vector3d(12.0, 64.0, 52.0), vector3);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4f mat4 = new Matrix4f(new float[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1});
         final Vector3d vector4 = new Vector3d(6, 8, 10);
-        vector4.mulProject(mat4);
+        vector4.mulProject(PROPERTY_IDENTITY_MATRIX_4F);
         assertEquals(new Vector3d(6.0, 8.0, 10.0), vector4);
     }
 
     @Test
     void testVector3DMulProjectWithMatrix4dAndDestinationVector3d() {
-        final Matrix4d mat1 = new Matrix4d(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
         final Vector3d destVector = new Vector3d();
-        vector1.mulProject(mat1, destVector);
+        vector1.mulProject(NORMAL_MATRIX_4D, destVector);
         assertEquals(new Vector3d(0.625, 0.75, 0.875), destVector);
         assertEquals(new Vector3d(3, 27, 1), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4d mat2 = new Matrix4d(new double[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                5, -2, 4, 1});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulProject(mat2, destVector);
+        vector2.mulProject(PROPERTY_TRANSLATION_MATRIX_4D, destVector);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), destVector);
         assertEquals(new Vector3d(7, 8, 9), vector2);
 
-
         // A matrix with PROPERTY_AFFINE property.
-        final Matrix4d mat3 = new Matrix4d(new double[]{
-                2, 0, 2, 0,
-                0,-2, 0, 0,
-                0, 8, 4, 0,
-                0, 0, 0, 1});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulProject(mat3, destVector);
+        vector3.mulProject(PROPERTY_AFFINE_MATRIX_4D, destVector);
         assertEquals(new Vector3d(12.0, 64.0, 52.0), destVector);
         assertEquals(new Vector3d(6, 8, 10), vector3);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4d mat4 = new Matrix4d(new double[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1});
         final Vector3d vector4 = new Vector3d(6, 8, 10);
-        vector4.mulProject(mat4, destVector);
+        vector4.mulProject(PROPERTY_IDENTITY_MATRIX_4D, destVector);
         assertEquals(new Vector3d(6.0, 8.0, 10.0), destVector);
         assertEquals(new Vector3d(6, 8, 10), vector4);
     }
 
     @Test
     void testVector3DMulProjectWithMatrix4d() {
-        final Matrix4d mat1 = new Matrix4d(new double[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
         final Vector3d vector1 = new Vector3d(3, 27, 1);
-        vector1.mulProject(mat1);
+        vector1.mulProject(NORMAL_MATRIX_4D);
         assertEquals(new Vector3d(0.625, 0.75, 0.875), vector1);
 
         // A matrix with PROPERTY_TRANSLATION property.
-        final Matrix4d mat2 = new Matrix4d(new double[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                5, -2, 4, 1});
         final Vector3d vector2 = new Vector3d(7, 8, 9);
-        vector2.mulProject(mat2);
+        vector2.mulProject(PROPERTY_TRANSLATION_MATRIX_4D);
         assertEquals(new Vector3d(12.0, 6.0, 13.0), vector2);
 
         // A matrix with PROPERTY_AFFINE property.
-        final Matrix4d mat3 = new Matrix4d(new double[]{
-                2, 0, 2, 0,
-                0,-2, 0, 0,
-                0, 8, 4, 0,
-                0, 0, 0, 1});
         final Vector3d vector3 = new Vector3d(6, 8, 10);
-        vector3.mulProject(mat3);
+        vector3.mulProject(PROPERTY_AFFINE_MATRIX_4D);
         assertEquals(new Vector3d(12.0, 64.0, 52.0), vector3);
 
         // A matrix with PROPERTY_IDENTITY property.
-        final Matrix4d mat4 = new Matrix4d(new double[]{
-                1, 0, 0, 0,
-                0, 1, 0, 0,
-                0, 0, 1, 0,
-                0, 0, 0, 1});
         final Vector3d vector4 = new Vector3d(6, 8, 10);
-        vector4.mulProject(mat4);
+        vector4.mulProject(PROPERTY_IDENTITY_MATRIX_4D);
         assertEquals(new Vector3d(6.0, 8.0, 10.0), vector4);
     }
 
