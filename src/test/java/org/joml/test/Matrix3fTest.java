@@ -95,4 +95,64 @@ class Matrix3fTest {
         assertMatrix3fEquals(new Matrix3f().zero().set(2, 1, 3), new Matrix3f(0, 0, 0, 0, 0, 0, 0, 3, 0), 0);
         assertMatrix3fEquals(new Matrix3f().zero().set(2, 2, 3), new Matrix3f(0, 0, 0, 0, 0, 0, 0, 0, 3), 0);
     }
+    
+    @Test
+    void testEquals() {
+    	// arrange
+    	Matrix3f m1 = new Matrix3f(1, 2, 3, 4, 5, 6, 7, 8, 9);
+		Matrix3f m2 = new Matrix3f(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+		// act & assert
+		assertTrue(m1.equals(m1));
+		assertFalse(m1.equals(null));
+		assertFalse(m1.equals("something"));
+		assertTrue(m1.equals(m2));
+		assertFalse(m1.equals(new Matrix3f(0, 2, 3, 4, 5, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3f(1, 0, 3, 4, 5, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3f(1, 2, 0, 4, 5, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3f(1, 2, 3, 0, 5, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3f(1, 2, 3, 4, 0, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3f(1, 2, 3, 4, 5, 0, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3f(1, 2, 3, 4, 5, 6, 0, 8, 9)));
+		assertFalse(m1.equals(new Matrix3f(1, 2, 3, 4, 5, 6, 7, 0, 9)));
+		assertFalse(m1.equals(new Matrix3f(1, 2, 3, 4, 5, 6, 7, 8, 0)));
+    }
+    
+    @Test
+    void testEqualsDelta() {
+    	// arrange
+    	Matrix3f m1 = new Matrix3f(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f);
+		Matrix3f m2 = new Matrix3f(1.01f, 2.01f, 3.01f, 4.01f, 5.01f, 6.01f, 7.01f, 8.01f, 9.01f);
+		float delta = 0.05f;
+
+		// act & assert
+		assertTrue(m1.equals(m1, delta));
+		assertFalse(m1.equals(null, delta));
+		assertTrue(m1.equals(m2, delta));
+		assertFalse(m1.equals(new Matrix3f(1.1f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f), delta));
+		assertFalse(m1.equals(new Matrix3f(1.0f, 2.1f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f), delta));
+		assertFalse(m1.equals(new Matrix3f(1.0f, 2.0f, 3.1f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f), delta));
+		assertFalse(m1.equals(new Matrix3f(1.0f, 2.0f, 3.0f, 4.1f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f), delta));
+		assertFalse(m1.equals(new Matrix3f(1.0f, 2.0f, 3.0f, 4.0f, 5.1f, 6.0f, 7.0f, 8.0f, 9.0f), delta));
+		assertFalse(m1.equals(new Matrix3f(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.1f, 7.0f, 8.0f, 9.0f), delta));
+		assertFalse(m1.equals(new Matrix3f(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.1f, 8.0f, 9.0f), delta));
+		assertFalse(m1.equals(new Matrix3f(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.1f, 9.0f), delta));
+		assertFalse(m1.equals(new Matrix3f(1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.1f), delta));
+    }
+    
+    @Test
+	void testIsFinite() {
+		assertTrue(new Matrix3f(1, 2, 3, 4, 5, 6, 7, 8, 9).isFinite());
+		assertFalse(new Matrix3f(Float.NaN, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f).isFinite());
+		assertFalse(new Matrix3f(1f, Float.NaN, 3f, 4f, 5f, 6f, 7f, 8f, 9f).isFinite());
+		assertFalse(new Matrix3f(1f, 2f, Float.NaN, 4f, 5f, 6f, 7f, 8f, 9f).isFinite());
+		assertFalse(new Matrix3f(1f, 2f, 3f, Float.NaN, 5f, 6f, 7f, 8f, 9f).isFinite());
+		assertFalse(new Matrix3f(1f, 2f, 3f, 4f, Float.NaN, 6f, 7f, 8f, 9f).isFinite());
+		assertFalse(new Matrix3f(1f, 2f, 3f, 4f, 5f, Float.NaN, 7f, 8f, 9f).isFinite());
+		assertFalse(new Matrix3f(1f, 2f, 3f, 4f, 5f, 6f, Float.NaN, 8f, 9f).isFinite());
+		assertFalse(new Matrix3f(1f, 2f, 3f, 4f, 5f, 6f, 7f, Float.NaN, 9f).isFinite());
+		assertFalse(new Matrix3f(1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, Float.NaN).isFinite());
+		assertFalse(new Matrix3f(1f, 2f, 3f, 4f, Float.POSITIVE_INFINITY, 6f, 7f, 8f, 9f).isFinite());
+	}
+    
 }
