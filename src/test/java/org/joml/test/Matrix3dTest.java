@@ -69,4 +69,64 @@ class Matrix3dTest {
         assertMatrix3dEquals(new Matrix3d().zero().set(2, 1, 3), new Matrix3d(0, 0, 0, 0, 0, 0, 0, 3, 0), 0);
         assertMatrix3dEquals(new Matrix3d().zero().set(2, 2, 3), new Matrix3d(0, 0, 0, 0, 0, 0, 0, 0, 3), 0);
     }
+    
+    @Test
+    void testEquals() {
+    	// arrange
+    	Matrix3d m1 = new Matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9);
+		Matrix3d m2 = new Matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+		// act & assert
+		assertTrue(m1.equals(m1));
+		assertFalse(m1.equals(null));
+		assertFalse(m1.equals("something"));
+		assertTrue(m1.equals(m2));
+		assertFalse(m1.equals(new Matrix3d(0, 2, 3, 4, 5, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3d(1, 0, 3, 4, 5, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3d(1, 2, 0, 4, 5, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3d(1, 2, 3, 0, 5, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3d(1, 2, 3, 4, 0, 6, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3d(1, 2, 3, 4, 5, 0, 7, 8, 9)));
+		assertFalse(m1.equals(new Matrix3d(1, 2, 3, 4, 5, 6, 0, 8, 9)));
+		assertFalse(m1.equals(new Matrix3d(1, 2, 3, 4, 5, 6, 7, 0, 9)));
+		assertFalse(m1.equals(new Matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 0)));
+    }
+    
+    @Test
+    void testEqualsDelta() {
+    	// arrange
+    	Matrix3d m1 = new Matrix3d(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+		Matrix3d m2 = new Matrix3d(1.01, 2.01, 3.01, 4.01, 5.01, 6.01, 7.01, 8.01, 9.01);
+		double delta = 0.05;
+
+		// act & assert
+		assertTrue(m1.equals(m1, delta));
+		assertFalse(m1.equals(null, delta));
+		assertTrue(m1.equals(m2, delta));
+		assertFalse(m1.equals(new Matrix3d(1.1, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0), delta));
+		assertFalse(m1.equals(new Matrix3d(1.0, 2.1, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0), delta));
+		assertFalse(m1.equals(new Matrix3d(1.0, 2.0, 3.1, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0), delta));
+		assertFalse(m1.equals(new Matrix3d(1.0, 2.0, 3.0, 4.1, 5.0, 6.0, 7.0, 8.0, 9.0), delta));
+		assertFalse(m1.equals(new Matrix3d(1.0, 2.0, 3.0, 4.0, 5.1, 6.0, 7.0, 8.0, 9.0), delta));
+		assertFalse(m1.equals(new Matrix3d(1.0, 2.0, 3.0, 4.0, 5.0, 6.1, 7.0, 8.0, 9.0), delta));
+		assertFalse(m1.equals(new Matrix3d(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.1, 8.0, 9.0), delta));
+		assertFalse(m1.equals(new Matrix3d(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.1, 9.0), delta));
+		assertFalse(m1.equals(new Matrix3d(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.1), delta));
+    }
+    
+    @Test
+	void testIsFinite() {
+		assertTrue(new Matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9).isFinite());
+		assertFalse(new Matrix3d(Double.NaN, 2, 3, 4, 5, 6, 7, 8, 9).isFinite());
+		assertFalse(new Matrix3d(1, Double.NaN, 3, 4, 5, 6, 7, 8, 9).isFinite());
+		assertFalse(new Matrix3d(1, 2, Double.NaN, 4, 5, 6, 7, 8, 9).isFinite());
+		assertFalse(new Matrix3d(1, 2, 3, Double.NaN, 5, 6, 7, 8, 9).isFinite());
+		assertFalse(new Matrix3d(1, 2, 3, 4, Double.NaN, 6, 7, 8, 9).isFinite());
+		assertFalse(new Matrix3d(1, 2, 3, 4, 5, Double.NaN, 7, 8, 9).isFinite());
+		assertFalse(new Matrix3d(1, 2, 3, 4, 5, 6, Double.NaN, 8, 9).isFinite());
+		assertFalse(new Matrix3d(1, 2, 3, 4, 5, 6, 7, Double.NaN, 9).isFinite());
+		assertFalse(new Matrix3d(1, 2, 3, 4, 5, 6, 7, 8, Double.NaN).isFinite());
+		assertFalse(new Matrix3d(1, 2, 3, 4, Double.POSITIVE_INFINITY, 6, 7, 8, 9).isFinite());
+	}
+    
 }
