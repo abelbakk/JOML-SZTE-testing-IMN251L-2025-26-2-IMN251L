@@ -26,8 +26,11 @@ package org.joml.test;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 import org.joml.Math;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -97,4 +100,127 @@ class FrustumIntersectionTest {
         assertEquals(Matrix4fc.PLANE_NX, c.intersectAab(-6.1f, 0, -3, -5, 2, -2, FrustumIntersection.PLANE_MASK_NX));
         assertEquals(Matrix4fc.PLANE_NX, c.intersectAab(-6.1f, 0, -3, -5, 2, -2, ~0, Matrix4fc.PLANE_NX));
     }
+    
+    // camera frustum
+    // PARAMETRIC_SURFACE: [-u, u*v, -u]; u=[0,10], v=[-1,1]
+    // PARAMETRIC_SURFACE: [u, u*v, -u]; u=[0,10], v=[-1,1]
+    // PARAMETRIC_SURFACE: [u*v, u, -u]; u=[0,10], v=[-1,1]
+    // PARAMETRIC_SURFACE: [u*v, -u, -u]; u=[0,10], v=[-1,1]
+    // https://www.math3d.org/gT7vjuI2fo
+    @ParameterizedTest
+	@CsvSource({
+		// LINE: [[-1.0, 0.0, -5.0],[1.0, 0.0, -5.0]]
+		// https://www.math3d.org/JY1iqYPqRe
+		"-1.0, 0.0, -5.0, 1.0, 0.0, -5.0, true",
+		// LINE: [[-10.0, 0.0, -5.0],[-6.0, 0.0, -5.0]]
+		// https://www.math3d.org/yZDPJ8qMvS
+		"-10.0, 0.0, -5.0, -6.0, 0.0, -5.0, false",
+		// LINE: [[6.0, 0.0, -5.0],[10.0, 0.0, -5.0]]
+		// https://www.math3d.org/HRAzRfeIze
+		"6.0, 0.0, -5.0, 10.0, 0.0, -5.0, false",
+		// LINE: [[0.0, -10.0, -5.0],[0.0, -6.0, -5.0]]
+		// https://www.math3d.org/e8HnXaoSl6
+		"0.0, -10.0, -5.0, 0.0, -6.0, -5.0, false",
+		// LINE: [[0.0, 6.0, -5.0],[0.0, 10.0, -5.0]]
+		// https://www.math3d.org/AULYzdjLG9
+		"0.0, 6.0, -5.0, 0.0, 10.0, -5.0, false",
+		// LINE: [[0.0, 0.0, 0.0],[0.0, 0.0, 0.5]]
+		// https://www.math3d.org/ztSST3Sn9M
+		"0.0, 0.0, 0.0, 0.0, 0.0, 0.5, false",
+		// LINE: [[0.0, 0.0, -110.0],[0.0, 0.0, -150.0]]
+		// https://www.math3d.org/qVjD8F9a87
+		"0.0, 0.0, -110.0, 0.0, 0.0, -150.0, false",
+		// LINE: [[-10.0, 0.0, -5.0],[0.0, 0.0, -5.0]]
+		// https://www.math3d.org/Iyz6t1AjAB
+		"-10.0, 0.0, -5.0, 0.0, 0.0, -5.0, true",
+		// LINE: [[0.0, 0.0, -5.0],[-10.0, 0.0, -5.0]]
+		// https://www.math3d.org/8FT8rbrDSw
+		"0.0, 0.0, -5.0, -10.0, 0.0, -5.0, true",
+		// LINE: [[10.0, 0.0, -5.0],[0.0, 0.0, -5.0]]
+		// https://www.math3d.org/xCzujd23Mo
+		"10.0, 0.0, -5.0, 0.0, 0.0, -5.0, true",
+		// LINE: [[0.0, -10.0, -5.0],[0.0, 0.0, -5.0]]
+		// https://www.math3d.org/1CV5LDPDza
+		"0.0, -10.0, -5.0, 0.0, 0.0, -5.0, true",
+		// LINE: [[0.0, 0.0, -5.0],[0.0, 10.0, -5.0]]
+		// https://www.math3d.org/bhGE6cEvab
+		"0.0, 0.0, -5.0, 0.0, 10.0, -5.0, true",
+		// LINE: [[-10.0, 6.0, -5.0],[10.0, 6.0, -5.0]]
+		// https://www.math3d.org/7DBnokoNPB
+		"-10.0, 6.0, -5.0, 10.0, 6.0, -5.0, false",
+		// LINE: [[-10.0, -10.0, -5.0],[10.0, 10.0, -5.0]]
+		// https://www.math3d.org/K7q8ulCCHH
+		"-10.0, -10.0, -5.0, 10.0, 10.0, -5.0, true",
+		// LINE: [[0.0, 0.0, -5.0],[10.0, 0.0, -5.0]]
+		// https://www.math3d.org/K7q8ulCCHH
+		"0.0, 0.0, -5.0, 10.0, 0.0, -5.0, true",
+		// LINE: [[0.0, 0.0, -5.0],[0.0, -10.0, -5.0]]
+		// https://www.math3d.org/8Re4hlKZc9
+		"0.0, 0.0, -5.0, 0.0, -10.0, -5.0, true",
+		// LINE: [[0.0, 10.0, -5.0],[0.0, 0.0, -5.0]]
+		// https://www.math3d.org/V8B7xXFGfH
+		"0.0, 10.0, -5.0, 0.0, 0.0, -5.0, true",
+		// LINE: [[0.0, 0.0, 2.0],[0.0, 0.0, -5.0]]
+		// https://www.math3d.org/NrIgr4obyT
+		"0.0, 0.0, 2.0, 0.0, 0.0, -5.0, true",
+		// LINE: [[0.0, 0.0, -5.0],[0.0, 0.0, 2.0]]
+		// https://www.math3d.org/n6m8tfjLYC
+		"0.0, 0.0, -5.0, 0.0, 0.0, 2.0, true",
+		// LINE: [[0.0, 0.0, -5.0],[0.0, 0.0, -150.0]]
+		// https://www.math3d.org/TSG6aJmiGW
+		"0.0, 0.0, -5.0, 0.0, 0.0, -150.0, true",
+		// LINE: [[0.0, 0.0, -150.0],[0.0, 0.0, -5.0]]
+		// https://www.math3d.org/pcjUKsVIDN
+		"0.0, 0.0, -150.0, 0.0, 0.0, -5.0, true"
+	})
+	void testTestLineSegment(float aX, float aY, float aZ, float bX, float bY, float bZ, boolean expected) {
+		// arrange
+		Matrix4f m = new Matrix4f().perspective((float) Math.PI / 2.0f, 1.0f, 0.1f, 100.0f);
+		FrustumIntersection c = new FrustumIntersection(m);
+		
+		// act
+		boolean result = c.testLineSegment(aX, aY, aZ, bX, bY, bZ);
+		
+		// assert
+		assertEquals(expected, result);
+	}
+    
+    @ParameterizedTest
+	@CsvSource({
+		"-1.0, 0.0, -5.0, 1.0, 0.0, -5.0, true",
+		"-10.0, 0.0, -5.0, -6.0, 0.0, -5.0, false",
+		"6.0, 0.0, -5.0, 10.0, 0.0, -5.0, false",
+		"0.0, -10.0, -5.0, 0.0, -6.0, -5.0, false",
+		"0.0, 6.0, -5.0, 0.0, 10.0, -5.0, false",
+		"0.0, 0.0, 0.0, 0.0, 0.0, 0.5, false",
+		"0.0, 0.0, -110.0, 0.0, 0.0, -150.0, false",
+		"-10.0, 0.0, -5.0, 0.0, 0.0, -5.0, true",
+		"0.0, 0.0, -5.0, -10.0, 0.0, -5.0, true",
+		"10.0, 0.0, -5.0, 0.0, 0.0, -5.0, true",
+		"0.0, -10.0, -5.0, 0.0, 0.0, -5.0, true",
+		"0.0, 0.0, -5.0, 0.0, 10.0, -5.0, true",
+		"-10.0, 6.0, -5.0, 10.0, 6.0, -5.0, false",
+		"-10.0, -10.0, -5.0, 10.0, 10.0, -5.0, true",
+		"0.0, 0.0, -5.0, 10.0, 0.0, -5.0, true",
+		"0.0, 0.0, -5.0, 0.0, -10.0, -5.0, true",
+		"0.0, 10.0, -5.0, 0.0, 0.0, -5.0, true",
+		"0.0, 0.0, 2.0, 0.0, 0.0, -5.0, true",
+		"0.0, 0.0, -5.0, 0.0, 0.0, 2.0, true",
+		"0.0, 0.0, -5.0, 0.0, 0.0, -150.0, true",
+		"0.0, 0.0, -150.0, 0.0, 0.0, -5.0, true"
+	})
+	void testTestLineSegmentVectors(float aX, float aY, float aZ, float bX, float bY, float bZ, boolean expected) {
+		// arrange
+		Matrix4f m = new Matrix4f().perspective((float) Math.PI / 2.0f, 1.0f, 0.1f, 100.0f);
+		FrustumIntersection c = new FrustumIntersection(m);
+		Vector3f a = new Vector3f(aX, aY, aZ);
+		Vector3f b = new Vector3f(bX, bY, bZ);
+		
+		// act
+		boolean result = c.testLineSegment(a, b);
+		
+		// assert
+		assertEquals(expected, result);
+	}
+    
 }
