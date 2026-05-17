@@ -1,0 +1,131 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2016-2026  JOML.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+package org.joml.test;
+
+import org.joml.Matrix3x2d;
+import org.joml.Matrix3x2dStack;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class Matrix3x2dStackTest {
+    @Test
+    void testPushPop() {
+        Matrix3x2d identity = new Matrix3x2d();
+        Matrix3x2dStack m = new Matrix3x2dStack(2);
+        m.pushMatrix();
+        m.scale(2);
+        assertNotEquals(identity, m);
+        m.popMatrix();
+        assertEquals(identity, m);
+    }
+
+    @Test
+    void testPushTooFar() {
+        assertThrows(IllegalStateException.class, () -> {
+            Matrix3x2dStack m = new Matrix3x2dStack(2);
+            m.pushMatrix();
+            m.pushMatrix();
+        });
+    }
+
+    @Test
+    void testPopTooFar() {
+        assertThrows(IllegalStateException.class, () -> {
+            Matrix3x2dStack m = new Matrix3x2dStack(2);
+            m.pushMatrix();
+            m.popMatrix();
+            m.popMatrix();
+        });
+    }
+
+    @Test
+    void testEquals() {
+        Matrix3x2dStack s1 = new Matrix3x2dStack(3);
+        Matrix3x2dStack s2 = new Matrix3x2dStack(1);
+        Matrix3x2dStack s3 = new Matrix3x2dStack(2);
+        Matrix3x2dStack s4 = new Matrix3x2dStack(2);
+        s4.scale(2);
+        Matrix3x2dStack s5 = new Matrix3x2dStack(2);
+        s5.pushMatrix();
+        Matrix3x2dStack s6 = new Matrix3x2dStack(2);
+        s6.pushMatrix();
+        s6.scale(2);
+        s6.popMatrix();
+        Matrix3x2d m1 = new Matrix3x2d();
+        Matrix3x2d m2 = new Matrix3x2d().scale(2);
+        
+        // Matrix3x2dStack.equals(Matrix3x2d) only compares the 6 matrix elements
+        assertEquals(s1, m1);
+        assertEquals(s2, m1);
+        assertNotEquals(s1, m2);
+        assertEquals(s4, m2);
+
+        // Matrix3x2dStack.equals(Matrix3x2dStack) compares the 6 matrix elements
+        // and all matrices from the bottom to the current/top of the stack.
+        assertEquals(s1, s2);
+        assertEquals(s1, s3);
+        assertNotEquals(s1, s4);
+        assertNotEquals(s3, s5);
+        assertEquals(s3, s6);
+    }
+
+    @Test
+    void testClear() {
+        Matrix3x2dStack m = new Matrix3x2dStack(3);
+        m.scale(5);
+        m.pushMatrix();
+        m.scale(2);
+        m.clear();
+        assertEquals(new Matrix3x2d(), m);
+    }
+
+    @Test
+    void testMultiplePushPop() {
+        Matrix3x2dStack m = new Matrix3x2dStack(4);
+        Matrix3x2d identity = new Matrix3x2d();
+        
+        m.pushMatrix();
+        m.translate(1.0, 2.0);
+        m.pushMatrix();
+        m.rotate(0.5);
+        m.popMatrix();
+        assertEquals(m, new Matrix3x2d().translate(1.0, 2.0));
+        
+        m.popMatrix();
+        assertEquals(m, identity);
+    }
+
+    @Test
+    void testStackSize() {
+        assertThrows(IllegalArgumentException.class, () -> new Matrix3x2dStack(0));
+        assertThrows(IllegalArgumentException.class, () -> new Matrix3x2dStack(-1));
+        
+        Matrix3x2dStack m1 = new Matrix3x2dStack(1);
+        assertEquals(m1, new Matrix3x2d());
+        
+        Matrix3x2dStack m5 = new Matrix3x2dStack(5);
+        assertEquals(m5, new Matrix3x2d());
+    }
+}
