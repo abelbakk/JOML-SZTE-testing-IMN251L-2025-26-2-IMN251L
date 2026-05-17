@@ -77,4 +77,69 @@ class Matrix3x2dTest {
         assertTrue(m.testPoint(area[2] - 0.1, 0));
         assertFalse(m.testPoint(area[2] + 0.01, 0));
     }
+
+    @Test
+    void testEquals() {
+        Matrix3x2d a = new Matrix3x2d(1, 2, 3, 4, 5, 6);
+        Matrix3x2d b = new Matrix3x2d(a);
+        assertEquals(a, b);
+        Matrix3x2d c = new Matrix3x2d(1, 2, 3, 4, 5, 7);
+        assertNotEquals(a, c);
+        assertNotEquals(a, null);
+        assertNotEquals(a, new Object());
+    }
+
+    @Test
+    void testIsFinite() {
+        Matrix3x2d m = new Matrix3x2d(1, 2, 3, 4, 5, 6);
+        assertTrue(m.isFinite());
+        m.m20 = Double.NaN;
+        assertFalse(m.isFinite());
+        m.m20 = 1.0;
+        m.m21 = Double.POSITIVE_INFINITY;
+        assertFalse(m.isFinite());
+    }
+
+    @Test
+    void testToString() {
+        Matrix3x2d m = new Matrix3x2d(1, 2, 3, 4, 5, 6);
+        String s = m.toString();
+        assertNotNull(s);
+        assertTrue(s.length() > 0);
+        assertTrue(s.contains("\n") || s.contains(System.lineSeparator()));
+    }
+
+    @Test
+    void testCircle() {
+        Matrix3x2d m = new Matrix3x2d().view(-4, 2, -3, 10);
+        // center inside
+        assertTrue(m.testCircle(0, 0, 0.0));
+        // near top inside
+        assertTrue(m.testCircle(0, 9.99, 0.1));
+        // slightly outside
+        assertFalse(m.testCircle(0, 10.1, 0.01));
+
+        // rotated view: use viewArea bounds
+        m.setView(-2, 2, -2, 2).rotate(Math.toRadians(45));
+        double[] area = m.viewArea(new double[4]);
+        // a small circle at the left edge should be inside
+        assertTrue(m.testCircle(area[0] + 1e-6, 0, 0.01));
+        // just outside the left edge
+        assertFalse(m.testCircle(area[0] - 0.01, 0, 0.001));
+    }
+
+    @Test
+    void testAar() {
+        Matrix3x2d m = new Matrix3x2d().view(-4, 2, -3, 10);
+        // a box well inside
+        assertTrue(m.testAar(-1, -1, 1, 1));
+        // a box far outside
+        assertFalse(m.testAar(100, 100, 101, 101));
+
+        // rotated view: small box around origin should still intersect
+        m.setView(-2, 2, -2, 2).rotate(Math.toRadians(45));
+        assertTrue(m.testAar(-0.1, -0.1, 0.1, 0.1));
+        // well outside on the right
+        assertFalse(m.testAar(100.0, 100.0, 101.0, 101.0));
+    }
 }
