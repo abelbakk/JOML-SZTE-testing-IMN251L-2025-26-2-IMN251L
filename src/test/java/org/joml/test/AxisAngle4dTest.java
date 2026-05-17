@@ -25,6 +25,8 @@ package org.joml.test;
 
 import org.joml.AxisAngle4d;
 import org.joml.Math;
+import org.joml.Matrix3d;
+import org.joml.Matrix4d;
 import org.joml.Quaterniond;
 import org.junit.jupiter.api.Test;
 
@@ -52,5 +54,240 @@ class AxisAngle4dTest {
         a1 = new AxisAngle4d(Math.toRadians(-20.0) * 10.0, 1.0, 0.0, 0.0);
         a2 = new AxisAngle4d(Math.toRadians(-380.0) * 10.0, 1.0, 0.0, 0.0);
         assertEquals(a1.angle, a2.angle, 1E-5);
+    }
+
+    @Test
+    void testSetFromMatrix3f() {
+        double angle = Math.toRadians(37.0);
+        org.joml.Matrix3f m = new org.joml.Matrix3f().rotationX((float) angle);
+        AxisAngle4d a = new AxisAngle4d().set(m);
+        assertEquals(angle, a.angle, 1E-5);
+        assertEquals(1.0, a.x, 1E-5);
+        assertEquals(0.0, a.y, 1E-5);
+        assertEquals(0.0, a.z, 1E-5);
+    }
+
+    @Test
+    void testSetFromMatrix3d() {
+        double angle = Math.toRadians(53.0);
+        org.joml.Matrix3d m = new org.joml.Matrix3d().rotationX(angle);
+        AxisAngle4d a = new AxisAngle4d().set(m);
+        assertEquals(angle, a.angle, 1E-8);
+        assertEquals(1.0, a.x, 1E-8);
+        assertEquals(0.0, a.y, 1E-8);
+        assertEquals(0.0, a.z, 1E-8);
+    }
+
+    @Test
+    void testSetFromMatrix4f() {
+        double angle = Math.toRadians(12.5);
+        org.joml.Matrix4f m = new org.joml.Matrix4f().rotationX((float) angle);
+        AxisAngle4d a = new AxisAngle4d().set(m);
+        assertEquals(angle, a.angle, 1E-5);
+        assertEquals(1.0, a.x, 1E-5);
+        assertEquals(0.0, a.y, 1E-5);
+        assertEquals(0.0, a.z, 1E-5);
+    }
+
+    @Test
+    void testSetFromMatrix4x3f() {
+        double angle = Math.toRadians(80.0);
+        org.joml.Matrix4x3f m = new org.joml.Matrix4x3f().rotationX((float) angle);
+        AxisAngle4d a = new AxisAngle4d().set(m);
+        assertEquals(angle, a.angle, 1E-5);
+        assertEquals(1.0, a.x, 1E-5);
+        assertEquals(0.0, a.y, 1E-5);
+        assertEquals(0.0, a.z, 1E-5);
+    }
+
+    @Test
+    void testSetFromMatrix4d() {
+        double angle = Math.toRadians(20.0);
+        org.joml.Matrix4d m = new org.joml.Matrix4d().rotationX(angle);
+        AxisAngle4d a = new AxisAngle4d().set(m);
+        assertEquals(angle, a.angle, 1E-8);
+        assertEquals(1.0, a.x, 1E-8);
+        assertEquals(0.0, a.y, 1E-8);
+        assertEquals(0.0, a.z, 1E-8);
+    }
+
+    @Test
+    void testSetFromIdentityMatrix3d() {
+        AxisAngle4d a = new AxisAngle4d().set(new Matrix3d());
+        assertEquals(0.0, a.angle, 1E-8);
+        assertEquals(0.0, a.x, 1E-8);
+        assertEquals(0.0, a.y, 1E-8);
+        assertEquals(1.0, a.z, 1E-8);
+    }
+
+    @Test
+    void testSetFromRotationYMatrix3d() {
+        double angle = Math.toRadians(90.0);
+        Matrix3d m = new Matrix3d().rotationY(angle);
+        AxisAngle4d a = new AxisAngle4d().set(m);
+        assertEquals(angle, a.angle, 1E-8);
+        assertEquals(0.0, a.x, 1E-8);
+        assertEquals(1.0, a.y, 1E-8);
+        assertEquals(0.0, a.z, 1E-8);
+    }
+
+    @Test
+    void testSetFromRotationZMatrix4d() {
+        double angle = Math.toRadians(135.0);
+        Matrix4d m = new Matrix4d().rotationZ(angle);
+        AxisAngle4d a = new AxisAngle4d().set(m);
+        assertEquals(angle, a.angle, 1E-8);
+        assertEquals(0.0, a.x, 1E-8);
+        assertEquals(0.0, a.y, 1E-8);
+        assertEquals(1.0, a.z, 1E-8);
+    }
+
+    @Test
+    void testSetFromMatrix4dIdentityKeepsUnitAxis() {
+        AxisAngle4d a = new AxisAngle4d(1.0, 1.0, 2.0, 3.0).set(new Matrix4d());
+        assertEquals(0.0, a.angle, 1E-8);
+        assertEquals(0.0, a.x, 1E-8);
+        assertEquals(0.0, a.y, 1E-8);
+        assertEquals(1.0, a.z, 1E-8);
+    }
+
+    @Test
+    void testSetFromMatrix3dEdgeCases() {
+        AxisAngle4d identity = new AxisAngle4d().set(new Matrix3d());
+        assertEquals(0.0, identity.angle, 1E-8);
+        assertEquals(0.0, identity.x, 1E-8);
+        assertEquals(0.0, identity.y, 1E-8);
+        assertEquals(1.0, identity.z, 1E-8);
+
+        double angle = Math.PI;
+        AxisAngle4d aroundX = new AxisAngle4d().set(new Matrix3d().rotationX(angle));
+        assertEquals(angle, aroundX.angle, 1E-8);
+        assertEquals(1.0, Math.abs(aroundX.x), 1E-8);
+        assertEquals(0.0, Math.abs(aroundX.y), 1E-8);
+        assertEquals(0.0, Math.abs(aroundX.z), 1E-8);
+
+        AxisAngle4d aroundY = new AxisAngle4d().set(new Matrix3d().rotationY(angle));
+        assertEquals(angle, aroundY.angle, 1E-8);
+        assertEquals(0.0, Math.abs(aroundY.x), 1E-8);
+        assertEquals(1.0, Math.abs(aroundY.y), 1E-8);
+        assertEquals(0.0, Math.abs(aroundY.z), 1E-8);
+
+        AxisAngle4d aroundZ = new AxisAngle4d().set(new Matrix3d().rotationZ(angle));
+        assertEquals(angle, aroundZ.angle, 1E-8);
+        assertEquals(0.0, Math.abs(aroundZ.x), 1E-8);
+        assertEquals(0.0, Math.abs(aroundZ.y), 1E-8);
+        assertEquals(1.0, Math.abs(aroundZ.z), 1E-8);
+    }
+
+    @Test
+    void testSetFromMatrix4dcEdgeCases() {
+        AxisAngle4d identity = new AxisAngle4d().set(new Matrix4d());
+        assertEquals(0.0, identity.angle, 1E-8);
+        assertEquals(0.0, identity.x, 1E-8);
+        assertEquals(0.0, identity.y, 1E-8);
+        assertEquals(1.0, identity.z, 1E-8);
+
+        double angle = Math.PI;
+        AxisAngle4d aroundX = new AxisAngle4d().set(new Matrix4d().rotationX(angle));
+        assertEquals(angle, aroundX.angle, 1E-8);
+        assertEquals(1.0, Math.abs(aroundX.x), 1E-8);
+        assertEquals(0.0, Math.abs(aroundX.y), 1E-8);
+        assertEquals(0.0, Math.abs(aroundX.z), 1E-8);
+
+        AxisAngle4d aroundY = new AxisAngle4d().set(new Matrix4d().rotationY(angle));
+        assertEquals(angle, aroundY.angle, 1E-8);
+        assertEquals(0.0, Math.abs(aroundY.x), 1E-8);
+        assertEquals(1.0, Math.abs(aroundY.y), 1E-8);
+        assertEquals(0.0, Math.abs(aroundY.z), 1E-8);
+
+        AxisAngle4d aroundZ = new AxisAngle4d().set(new Matrix4d().rotationZ(angle));
+        assertEquals(angle, aroundZ.angle, 1E-8);
+        assertEquals(0.0, Math.abs(aroundZ.x), 1E-8);
+        assertEquals(0.0, Math.abs(aroundZ.y), 1E-8);
+        assertEquals(1.0, Math.abs(aroundZ.z), 1E-8);
+    }
+
+    @Test
+    void testSetFromMatrix3fEdgeCases() {
+        AxisAngle4d identity = new AxisAngle4d().set(new org.joml.Matrix3f());
+        assertEquals(0.0, identity.angle, 1E-8);
+        assertEquals(0.0, identity.x, 1E-8);
+        assertEquals(0.0, identity.y, 1E-8);
+        assertEquals(1.0, identity.z, 1E-8);
+
+        double angle = Math.PI;
+        AxisAngle4d aroundX = new AxisAngle4d().set(new org.joml.Matrix3f().rotationX((float) angle));
+        assertEquals(angle, aroundX.angle, 1E-5);
+        assertEquals(1.0, Math.abs(aroundX.x), 1E-5);
+        assertEquals(0.0, Math.abs(aroundX.y), 1E-5);
+        assertEquals(0.0, Math.abs(aroundX.z), 1E-5);
+
+        AxisAngle4d aroundY = new AxisAngle4d().set(new org.joml.Matrix3f().rotationY((float) angle));
+        assertEquals(angle, aroundY.angle, 1E-5);
+        assertEquals(0.0, Math.abs(aroundY.x), 1E-5);
+        assertEquals(1.0, Math.abs(aroundY.y), 1E-5);
+        assertEquals(0.0, Math.abs(aroundY.z), 1E-5);
+
+        AxisAngle4d aroundZ = new AxisAngle4d().set(new org.joml.Matrix3f().rotationZ((float) angle));
+        assertEquals(angle, aroundZ.angle, 1E-5);
+        assertEquals(0.0, Math.abs(aroundZ.x), 1E-5);
+        assertEquals(0.0, Math.abs(aroundZ.y), 1E-5);
+        assertEquals(1.0, Math.abs(aroundZ.z), 1E-5);
+    }
+
+    @Test
+    void testSetFromMatrix4fEdgeCases() {
+        AxisAngle4d identity = new AxisAngle4d().set(new org.joml.Matrix4f());
+        assertEquals(0.0, identity.angle, 1E-8);
+        assertEquals(0.0, identity.x, 1E-8);
+        assertEquals(0.0, identity.y, 1E-8);
+        assertEquals(1.0, identity.z, 1E-8);
+
+        double angle = Math.PI;
+        AxisAngle4d aroundX = new AxisAngle4d().set(new org.joml.Matrix4f().rotationX((float) angle));
+        assertEquals(angle, aroundX.angle, 1E-5);
+        assertEquals(1.0, Math.abs(aroundX.x), 1E-5);
+        assertEquals(0.0, Math.abs(aroundX.y), 1E-5);
+        assertEquals(0.0, Math.abs(aroundX.z), 1E-5);
+
+        AxisAngle4d aroundY = new AxisAngle4d().set(new org.joml.Matrix4f().rotationY((float) angle));
+        assertEquals(angle, aroundY.angle, 1E-5);
+        assertEquals(0.0, Math.abs(aroundY.x), 1E-5);
+        assertEquals(1.0, Math.abs(aroundY.y), 1E-5);
+        assertEquals(0.0, Math.abs(aroundY.z), 1E-5);
+
+        AxisAngle4d aroundZ = new AxisAngle4d().set(new org.joml.Matrix4f().rotationZ((float) angle));
+        assertEquals(angle, aroundZ.angle, 1E-5);
+        assertEquals(0.0, Math.abs(aroundZ.x), 1E-5);
+        assertEquals(0.0, Math.abs(aroundZ.y), 1E-5);
+        assertEquals(1.0, Math.abs(aroundZ.z), 1E-5);
+    }
+
+    @Test
+    void testSetFromMatrix4x3fEdgeCases() {
+        AxisAngle4d identity = new AxisAngle4d().set(new org.joml.Matrix4x3f());
+        assertEquals(0.0, identity.angle, 1E-8);
+        assertEquals(0.0, identity.x, 1E-8);
+        assertEquals(0.0, identity.y, 1E-8);
+        assertEquals(1.0, identity.z, 1E-8);
+
+        double angle = Math.PI;
+        AxisAngle4d aroundX = new AxisAngle4d().set(new org.joml.Matrix4x3f().rotationX((float) angle));
+        assertEquals(angle, aroundX.angle, 1E-5);
+        assertEquals(1.0, Math.abs(aroundX.x), 1E-5);
+        assertEquals(0.0, Math.abs(aroundX.y), 1E-5);
+        assertEquals(0.0, Math.abs(aroundX.z), 1E-5);
+
+        AxisAngle4d aroundY = new AxisAngle4d().set(new org.joml.Matrix4x3f().rotationY((float) angle));
+        assertEquals(angle, aroundY.angle, 1E-5);
+        assertEquals(0.0, Math.abs(aroundY.x), 1E-5);
+        assertEquals(1.0, Math.abs(aroundY.y), 1E-5);
+        assertEquals(0.0, Math.abs(aroundY.z), 1E-5);
+
+        AxisAngle4d aroundZ = new AxisAngle4d().set(new org.joml.Matrix4x3f().rotationZ((float) angle));
+        assertEquals(angle, aroundZ.angle, 1E-5);
+        assertEquals(0.0, Math.abs(aroundZ.x), 1E-5);
+        assertEquals(0.0, Math.abs(aroundZ.y), 1E-5);
+        assertEquals(1.0, Math.abs(aroundZ.z), 1E-5);
     }
 }
