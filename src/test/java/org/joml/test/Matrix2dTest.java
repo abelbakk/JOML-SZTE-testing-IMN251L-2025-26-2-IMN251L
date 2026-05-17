@@ -24,6 +24,7 @@
 package org.joml.test;
 
 import org.joml.Matrix2d;
+import org.joml.Vector2i;
 import org.joml.Vector2d;
 import org.junit.jupiter.api.Test;
 
@@ -75,5 +76,56 @@ class Matrix2dTest {
         Matrix2d inv = new Matrix2d(11, 13, 17, 19).invert();
         Vector2d expected = inv.transform(new Vector2d(0, 1)).normalize();
         assertTrue(expected.equals(new Matrix2d(11, 13, 17, 19).positiveY(new Vector2d()), 0.001));
+    }
+
+    @Test
+    void testEquals() {
+        final Matrix2d matrix = new Matrix2d(1, 2, 3, 4);
+        assertEquals(matrix, new Matrix2d(1, 2, 3, 4));
+        assertNotEquals(matrix, new Matrix2d(4, 3, 2, 1));
+        assertFalse(matrix.equals(null));
+        assertFalse(matrix.equals(new Vector2i(1, 2)));
+    }
+
+    @Test
+    void testGet() {
+        final Matrix2d matrix = new Matrix2d(1, 2, 3, 4);
+        assertEquals(1.0, matrix.get(0, 0));
+        assertEquals(2.0, matrix.get(0, 1));
+        assertEquals(3.0, matrix.get(1, 0));
+        assertEquals(4.0, matrix.get(1, 1));
+        assertThrows(IndexOutOfBoundsException.class, () -> matrix.get(2, 0));
+        assertThrows(IndexOutOfBoundsException.class, () -> matrix.get(0, 2));
+    }
+
+    @Test
+    void testSet() {
+        final Matrix2d matrix = new Matrix2d(1, 2, 3, 4);
+        matrix.set(0, 0, 10);
+        matrix.set(0, 1, 20);
+        matrix.set(1, 0, 30);
+        matrix.set(1, 1, 40);
+        assertEquals(new Matrix2d(10, 20, 30, 40), matrix);
+        assertThrows(IndexOutOfBoundsException.class, () -> matrix.set(2, 0, 50));
+        assertThrows(IndexOutOfBoundsException.class, () -> matrix.set(0, 2, 60));
+    }
+
+    @Test
+    void testIsFinite() {
+        final Matrix2d matrix = new Matrix2d(10, 20, 30, 40);
+        assertTrue(matrix.isFinite());
+        matrix.m00(Double.POSITIVE_INFINITY);
+        assertFalse(matrix.isFinite());
+    }
+
+    @Test
+    void testToString() {
+        final Matrix2d matrix = new Matrix2d(10, 20, 30, 40);
+        final String formatted = matrix.toString(new java.text.DecimalFormat("0.0"));
+        assertFalse(formatted.isEmpty());
+        assertTrue(formatted.contains("\n"));
+
+        final String scientific = new Matrix2d(1.0E20, 2, 3, 4).toString();
+        assertFalse(scientific.isEmpty());
     }
 }
