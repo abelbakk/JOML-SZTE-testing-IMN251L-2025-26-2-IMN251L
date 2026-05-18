@@ -140,4 +140,31 @@ class Vector4LTest {
 
         assertThrows(IllegalArgumentException.class, () -> vector1.setComponent(4, 99));
     }
+
+    @Test
+    void testAbsoluteAndToString() {
+        Vector4L v = new Vector4L(-3L, -5L, 1L, -7L);
+        v.absolute();
+        assertEquals(new Vector4L(3L, 5L, 1L, 7L), v);
+
+        java.text.NumberFormat nf = java.text.NumberFormat.getInstance();
+        String expected = "(" + nf.format(3L) + " " + nf.format(5L) + " " + nf.format(1L) + " " + nf.format(7L) + ")";
+        assertEquals(expected, v.toString(nf));
+    }
+
+    @Test
+    void testMaxComponentTies() {
+        assertEquals(0, new Vector4L(5L, 5L, 5L, 5L).maxComponent());
+        assertEquals(1, new Vector4L(4L, 6L, 6L, 1L).maxComponent());
+        assertEquals(2, new Vector4L(3L, 3L, 7L, 7L).maxComponent());
+        assertEquals(3, new Vector4L(3L, 3L, 3L, 9L).maxComponent());
+    }
+
+    @Test
+    void testMinComponentTieBehavior() {
+        assertEquals(3, new Vector4L(5L, 5L, 5L, 5L).minComponent());
+        assertEquals(0, new Vector4L(1L, 5L, 5L, 5L).minComponent());
+        assertEquals(1, new Vector4L(5L, 1L, 5L, 5L).minComponent());
+        assertEquals(2, new Vector4L(5L, 5L, 1L, 5L).minComponent());
+    }
 }
