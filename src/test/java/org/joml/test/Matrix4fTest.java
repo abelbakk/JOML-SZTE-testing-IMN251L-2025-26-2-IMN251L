@@ -670,4 +670,263 @@ class Matrix4fTest {
                 10.0f);
         assertMatrix4fEquals(m1, m2, 1E-6f);
     }
+
+    @Test
+    void testInvertIdentity() {
+        Matrix4f identity = new Matrix4f();
+        Matrix4f inverted = new Matrix4f().set(identity).invert();
+        assertEquals(1.0f, inverted.m00(), 1e-5f);
+        assertEquals(0.0f, inverted.m01(), 1e-5f);
+        assertEquals(0.0f, inverted.m02(), 1e-5f);
+        assertEquals(0.0f, inverted.m03(), 1e-5f);
+        assertEquals(0.0f, inverted.m10(), 1e-5f);
+        assertEquals(1.0f, inverted.m11(), 1e-5f);
+    }
+
+    @Test
+    void testInvertSingular() {
+        // Matrix with zero determinant
+        Matrix4f singular = new Matrix4f(1, 2, 3, 4, 2, 4, 6, 8, 0, 0, 0, 0, 0, 0, 0, 1);
+        Matrix4f copy = new Matrix4f().set(singular);
+        copy.invert(); // Should handle gracefully
+        // Just verify it doesn't crash; exact result may vary for singular matrices
+    }
+
+    @Test
+    void testNormalize3x3Zero() {
+        // All zeros in upper-left 3x3
+        Matrix4f m = new Matrix4f(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        Matrix4f normalized = new Matrix4f().set(m).normalize3x3();
+        // Zero vector normalization should handle gracefully
+    }
+
+    @Test
+    void testNormalize3x3Normal() {
+        Matrix4f m = new Matrix4f(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1);
+        Matrix4f normalized = new Matrix4f().set(m).normalize3x3();
+        // Should normalize each column to unit length
+        assertEquals(1.0f, (float)Math.sqrt(normalized.m00() * normalized.m00() + normalized.m10() * normalized.m10() + normalized.m20() * normalized.m20()), 1e-5f);
+    }
+
+    @Test
+    void testPerspectiveVaryFov() {
+        Matrix4f m1 = new Matrix4f().perspective(Math.toRadians(45), 1.0f, 0.1f, 100.0f);
+        Matrix4f m2 = new Matrix4f().perspective(Math.toRadians(60), 1.0f, 0.1f, 100.0f);
+        assertNotEquals(m1.m11(), m2.m11(), 1e-5f);
+    }
+
+    @Test
+    void testFrustumVaryNearFar() {
+        Matrix4f m1 = new Matrix4f().frustum(-1, 1, -1, 1, 0.1f, 100);
+        Matrix4f m2 = new Matrix4f().frustum(-1, 1, -1, 1, 0.5f, 50);
+        assertNotEquals(m1.m22(), m2.m22(), 1e-5f);
+    }
+
+    @Test
+    void testOrthoBasic() {
+        Matrix4f m = new Matrix4f().ortho(-1, 1, -1, 1, 0.1f, 100);
+        assertTrue(m.isAffine());
+    }
+
+    @Test
+    void testOrtho2D() {
+        Matrix4f m = new Matrix4f().ortho2D(0, 100, 0, 100);
+        assertEquals(0.02f, m.m00(), 1e-5f); // 2 / (100 - 0)
+    }
+
+    @Test
+    void testLookAtDegenerateForwardEqualsUp() {
+        // When forward direction equals up vector, lookAt should handle it
+        Matrix4f m = new Matrix4f();
+        m.lookAt(0, 0, 0, 0, 1, 0, 0, 1, 0); // forward and up are parallel
+        // Should not crash; exact result is implementation-defined
+    }
+
+    @Test
+    void testRotateXZeroAngle() {
+        Matrix4f m = new Matrix4f().rotateX(0);
+        assertEquals(1.0f, m.m00(), 1e-5f);
+        assertEquals(1.0f, m.m11(), 1e-5f);
+        assertEquals(0.0f, m.m01(), 1e-5f);
+    }
+
+    @Test
+    void testRotateXNonzeroAngle() {
+        Matrix4f m = new Matrix4f().rotateX(0.5f); // non-zero angle
+        // Just verify it's not identity
+        assertNotEquals(1.0f, m.m11(), 0.01f);
+    }
+
+    @Test
+    void testRotateYZeroAngle() {
+        Matrix4f m = new Matrix4f().rotateY(0);
+        assertEquals(1.0f, m.m00(), 1e-5f);
+        assertEquals(1.0f, m.m11(), 1e-5f);
+        assertEquals(0.0f, m.m02(), 1e-5f);
+    }
+
+    @Test
+    void testRotateYNonzeroAngle() {
+        Matrix4f m = new Matrix4f().rotateY(0.5f); // non-zero angle
+        // Just verify it's not identity
+        assertNotEquals(1.0f, m.m00(), 0.01f);
+    }
+
+    @Test
+    void testRotateZZeroAngle() {
+        Matrix4f m = new Matrix4f().rotateZ(0);
+        assertEquals(1.0f, m.m00(), 1e-5f);
+        assertEquals(1.0f, m.m11(), 1e-5f);
+        assertEquals(0.0f, m.m01(), 1e-5f);
+    }
+
+    @Test
+    void testRotateZNonzeroAngle() {
+        Matrix4f m = new Matrix4f().rotateZ((float)(Math.PI / 2));
+        assertEquals(0.0f, m.m00(), 1e-5f);
+        assertEquals(1.0f, m.m33(), 1e-5f);
+    }
+
+    @Test
+    void testTranslateNormal() {
+        Matrix4f m = new Matrix4f().translate(1, 2, 3);
+        assertEquals(1.0f, m.m30(), 1e-5f);
+        assertEquals(2.0f, m.m31(), 1e-5f);
+        assertEquals(3.0f, m.m32(), 1e-5f);
+    }
+
+    @Test
+    void testTranslateZero() {
+        Matrix4f m = new Matrix4f().translate(0, 0, 0);
+        assertEquals(1.0f, m.m00(), 1e-5f);
+        assertEquals(0.0f, m.m30(), 1e-5f);
+    }
+
+    @Test
+    void testScaleNormal() {
+        Matrix4f m = new Matrix4f().scale(2, 3, 4);
+        assertEquals(2.0f, m.m00(), 1e-5f);
+        assertEquals(3.0f, m.m11(), 1e-5f);
+        assertEquals(4.0f, m.m22(), 1e-5f);
+    }
+
+    @Test
+    void testScaleZero() {
+        Matrix4f m = new Matrix4f().scale(0, 1, 1);
+        assertEquals(0.0f, m.m00(), 1e-5f);
+        assertEquals(1.0f, m.m11(), 1e-5f);
+    }
+
+    @Test
+    void testScaleNegative() {
+        Matrix4f m = new Matrix4f().scale(-1, 1, 1);
+        assertEquals(-1.0f, m.m00(), 1e-5f);
+        assertEquals(1.0f, m.m11(), 1e-5f);
+    }
+
+    @Test
+    void testMulIdentity() {
+        Matrix4f identity = new Matrix4f();
+        Matrix4f scaled = new Matrix4f().scale(2, 3, 4);
+        Matrix4f result = new Matrix4f(identity).mul(scaled);
+        // Identity * scaled = scaled
+        assertEquals(2.0f, result.m00(), 1e-5f);
+        assertEquals(3.0f, result.m11(), 1e-5f);
+        assertEquals(4.0f, result.m22(), 1e-5f);
+    }
+
+    @Test
+    void testMulMatrices() {
+        Matrix4f m1 = new Matrix4f().translate(1, 0, 0);
+        Matrix4f m2 = new Matrix4f().translate(0, 2, 0);
+        Matrix4f result = new Matrix4f().set(m1).mul(m2);
+        assertEquals(1.0f, result.m30(), 1e-5f);
+        assertEquals(2.0f, result.m31(), 1e-5f);
+    }
+
+    @Test
+    void testGetSet() {
+        Matrix4f original = new Matrix4f().translate(1, 2, 3).scale(2, 2, 2);
+        float[] values = new float[16];
+        original.get(values);
+        Matrix4f restored = new Matrix4f().set(values);
+        assertEquals(original.m00(), restored.m00(), 1e-5f);
+        assertEquals(original.m30(), restored.m30(), 1e-5f);
+    }
+
+    @Test
+    void testEquals() {
+        Matrix4f m1 = new Matrix4f().translate(1, 2, 3);
+        Matrix4f m2 = new Matrix4f().translate(1, 2, 3);
+        Matrix4f m3 = new Matrix4f().translate(0, 0, 0);
+        assertTrue(m1.equals(m2));
+        assertFalse(m1.equals(m3));
+    }
+
+    @Test
+    void testEqualsObjectBranches() {
+        Matrix4f m = new Matrix4f().translate(1, 2, 3);
+        assertTrue(m.equals((Object) m));
+        assertFalse(m.equals((Object) null));
+        assertFalse(m.equals((Object) "not-a-matrix"));
+    }
+
+    @Test
+    void testEqualsObjectSignedZero() {
+        Matrix4f positiveZero = new Matrix4f().m00(+0.0f);
+        Matrix4f negativeZero = new Matrix4f().m00(-0.0f);
+        assertFalse(positiveZero.equals(negativeZero));
+    }
+
+    @Test
+    void testEqualsDeltaBranches() {
+        Matrix4f base = new Matrix4f().translate(1, 2, 3);
+        Matrix4f close = new Matrix4f(base).m00(base.m00() + 5E-6f);
+        assertTrue(base.equals(close, 1E-5f));
+        assertFalse(base.equals(close, 1E-7f));
+        assertTrue(base.equals((Matrix4fc) base, 0.0f));
+        assertFalse(base.equals((Matrix4fc) null, 1E-5f));
+    }
+
+    @Test
+    void testIsFiniteAllFinite() {
+        Matrix4f m = new Matrix4f().translate(1, 2, 3);
+        assertTrue(m.isFinite());
+    }
+
+    @Test
+    void testIsFiniteNaN() {
+        Matrix4f m = new Matrix4f();
+        m.m00(Float.NaN);
+        assertFalse(m.isFinite());
+    }
+
+    @Test
+    void testIsFiniteInfinity() {
+        Matrix4f m = new Matrix4f();
+        m.m11(Float.POSITIVE_INFINITY);
+        assertFalse(m.isFinite());
+    }
+
+    @Test
+    void testTranspose() {
+        Matrix4f identity = new Matrix4f();
+        Matrix4f transposed = new Matrix4f().transpose(identity);
+        // Transpose of identity is identity
+        assertEquals(1.0f, transposed.m00(), 1e-5f);
+        assertEquals(1.0f, transposed.m11(), 1e-5f);
+        assertEquals(0.0f, transposed.m01(), 1e-5f);
+    }
+
+    @Test
+    void testDeterminantIdentity() {
+        Matrix4f m = new Matrix4f();
+        assertEquals(1.0f, m.determinant(), 1e-5f);
+    }
+
+    @Test
+    void testDeterminantScaled() {
+        Matrix4f m = new Matrix4f().scale(2, 3, 4);
+        assertEquals(24.0f, m.determinant(), 1e-5f); // 2*3*4 = 24
+    }
 }
