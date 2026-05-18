@@ -27,6 +27,10 @@ import org.joml.Matrix2f;
 import org.joml.Vector2f;
 import org.junit.jupiter.api.Test;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class Matrix2fTest {
@@ -75,5 +79,89 @@ class Matrix2fTest {
         Matrix2f inv = new Matrix2f(11, 13, 17, 19).invert();
         Vector2f expected = inv.transform(new Vector2f(0, 1)).normalize();
         assertTrue(expected.equals(new Matrix2f(11, 13, 17, 19).positiveY(new Vector2f()), 0.001f));
+    }
+
+    @Test
+    void testGetRowColumnExceptions() {
+        Matrix2f m = new Matrix2f();
+        assertThrows(IndexOutOfBoundsException.class, () -> m.getRow(-1, new Vector2f()));
+        assertThrows(IndexOutOfBoundsException.class, () -> m.getRow(2, new Vector2f()));
+        assertThrows(IndexOutOfBoundsException.class, () -> m.getColumn(-1, new Vector2f()));
+        assertThrows(IndexOutOfBoundsException.class, () -> m.getColumn(2, new Vector2f()));
+    }
+
+    @Test
+    void testSetRowColumnBranches() {
+        Matrix2f m = new Matrix2f();
+
+        m.setRow(0, 9f, 8f);
+        assertEquals(9f, m.m00);
+        assertEquals(8f, m.m10);
+
+        m.setRow(1, 7f, 6f);
+        assertEquals(7f, m.m01);
+        assertEquals(6f, m.m11);
+        assertThrows(IndexOutOfBoundsException.class, () -> m.setRow(2, 1f, 2f));
+
+        m.setColumn(0, 1f, 2f);
+        assertEquals(1f, m.m00);
+        assertEquals(2f, m.m01);
+
+        m.setColumn(1, 3f, 4f);
+        assertEquals(3f, m.m10);
+        assertEquals(4f, m.m11);
+        assertThrows(IndexOutOfBoundsException.class, () -> m.setColumn(2, 1f, 2f));
+    }
+
+    @Test
+    void testHashCodeEqualsConsistency() {
+        Matrix2f a = new Matrix2f(1f, 2f, 3f, 4f);
+        Matrix2f b = new Matrix2f(1f, 2f, 3f, 4f);
+        assertTrue(a.equals(b));
+        assertEquals(a.hashCode(), b.hashCode());
+        Matrix2f c = new Matrix2f(1f, 2f, 3f, 5f);
+        assertFalse(a.equals(c));
+    }
+
+    @Test
+    void testToStringAndFormatter() {
+        Matrix2f matrix = new Matrix2f(1234f, 5f, 6f, 7f);
+        String def = matrix.toString();
+        // default uses scientific notation for large numbers
+        assertTrue(def.contains("E") || def.contains("e"));
+
+        DecimalFormat fmt = new DecimalFormat("0.0", DecimalFormatSymbols.getInstance(Locale.US));
+        assertEquals("1234.0 6.0\n5.0 7.0\n", matrix.toString(fmt));
+    }
+
+    @Test
+    void testSetGetIndexedAndBounds() {
+        Matrix2f m = new Matrix2f();
+        m.set(0, 0, 2f);
+        m.set(0, 1, 3f);
+        m.set(1, 0, 5f);
+        m.set(1, 1, 7f);
+        assertEquals(2f, m.get(0, 0));
+        assertEquals(3f, m.get(0, 1));
+        assertEquals(5f, m.get(1, 0));
+        assertEquals(7f, m.get(1, 1));
+
+        assertThrows(IndexOutOfBoundsException.class, () -> m.set(-1, 0, 1f));
+        assertThrows(IndexOutOfBoundsException.class, () -> m.set(0, -1, 1f));
+        assertThrows(IndexOutOfBoundsException.class, () -> m.set(2, 0, 1f));
+        assertThrows(IndexOutOfBoundsException.class, () -> m.set(0, 2, 1f));
+
+        assertThrows(IndexOutOfBoundsException.class, () -> m.get(-1, 0));
+        assertThrows(IndexOutOfBoundsException.class, () -> m.get(0, -1));
+        assertThrows(IndexOutOfBoundsException.class, () -> m.get(2, 0));
+        assertThrows(IndexOutOfBoundsException.class, () -> m.get(0, 2));
+    }
+
+    @Test
+    void testIsFiniteBranches() {
+        assertTrue(new Matrix2f(1f, 2f, 3f, 4f).isFinite());
+        assertFalse(new Matrix2f(Float.NaN, 2f, 3f, 4f).isFinite());
+        assertFalse(new Matrix2f(1f, Float.POSITIVE_INFINITY, 3f, 4f).isFinite());
+        assertFalse(new Matrix2f(1f, 2f, Float.NEGATIVE_INFINITY, 4f).isFinite());
     }
 }
